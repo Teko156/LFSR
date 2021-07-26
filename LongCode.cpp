@@ -4,7 +4,7 @@
 
 LongCode::LongCode()
 {
-
+	//--------------------------------------------------------------------------
 	b = new bool**[n];
 	for(int i = 0; i < n; ++i)
 	{
@@ -16,58 +16,70 @@ LongCode::LongCode()
 				b[i][j][k] = false;
 		}
 	}
-
-
+	//--------------------------------------------------------------------------
+	mIn = new bool*[n];
 	for(int i = 0; i < n; ++i)
+	{
+		mIn[i] = new bool[n];
 		for(int j = 0; j < n; ++j)
-			for(int k = 0; k < n; ++k)
-				b[i][j][k] = false;
-
+			mIn[i][j] = false;
+	}
+	//--------------------------------------------------------------------------
+	mOut = new bool*[n];
+	for(int i = 0; i < n; ++i)
+	{
+		mOut[i] = new bool[n];
+		for(int j = 0; j < n; ++j)
+			mOut[i][j] = false;
+	}
+	//--------------------------------------------------------------------------
 	fillFirstMatrix();
 	for(int i = 1; i < n; ++i)
 	{
 		mult(b[i-1], b[i-1], b[i]);
 	}
+	//--------------------------------------------------------------------------
 }
 
 LongCode::~LongCode()
 {
 	deleteArr(b);
+	deleteArr(mIn);
+	deleteArr(mOut);
 }
 
 
 void LongCode::fillFirstMatrix()
 {
-//	for(int i = 0; i < n; ++i)
-//		for(int j = 0; j < n; ++j)
-//			b[0][i][j] = false;
 
 	for(int i = 1; i < n; ++i)
-		b[0][i][i-1] = true;
+		b[0][i-1][i] = true;
 
-	b[0][1][n-1] = true;
-	b[0][0][n-1] = true;
+//	b[0][1][n-1] = true;
+//	b[0][0][n-1] = true;
 
-//	b[0][42-1][n-1] = true;
-//	b[0][35-1][n-1] = true;
-//	b[0][33-1][n-1] = true;
-//	b[0][31-1][n-1] = true;
-//	b[0][27-1][n-1] = true;
-//	b[0][26-1][n-1] = true;
-//	b[0][25-1][n-1] = true;
-//	b[0][22-1][n-1] = true;
-//	b[0][21-1][n-1] = true;
-//	b[0][19-1][n-1] = true;
-//	b[0][18-1][n-1] = true;
-//	b[0][17-1][n-1] = true;
-//	b[0][16-1][n-1] = true;
-//	b[0][10-1][n-1] = true;
-//	b[0][ 7-1][n-1] = true;
-//	b[0][ 6-1][n-1] = true;
-//	b[0][ 5-1][n-1] = true;
-//	b[0][ 3-1][n-1] = true;
-//	b[0][ 2-1][n-1] = true;
-//	b[0][ 1-1][n-1] = true;
+
+	b[0][n-1][35] = true;
+	b[0][n-1][33] = true;
+	b[0][n-1][31] = true;
+	b[0][n-1][27] = true;
+	b[0][n-1][26] = true;
+	b[0][n-1][25] = true;
+	b[0][n-1][22] = true;
+	b[0][n-1][21] = true;
+	b[0][n-1][19] = true;
+	b[0][n-1][18] = true;
+	b[0][n-1][17] = true;
+	b[0][n-1][16] = true;
+	b[0][n-1][10] = true;
+	b[0][n-1][ 7] = true;
+	b[0][n-1][ 6] = true;
+	b[0][n-1][ 5] = true;
+	b[0][n-1][ 3] = true;
+	b[0][n-1][ 2] = true;
+	b[0][n-1][ 1] = true;
+	b[0][n-1][ 0] = true;
+
 
 
 }
@@ -117,16 +129,15 @@ void LongCode::deleteArr(bool* ptr)
 {
 	if(!ptr) return;
 	delete[] ptr;
-	ptr = 0;
+	ptr = nullptr;
 }
 
 void LongCode::deleteArr(bool** ptr)
 {
 	if(!ptr) return;
 	for(int i = 0; i < n; ++i)
-		delete[] ptr[i];
-	delete[] ptr;
-	ptr = nullptr;
+		deleteArr(ptr[i]);
+	deleteArr(ptr);
 }
 
 void LongCode::deleteArr(bool*** ptr)
@@ -134,41 +145,20 @@ void LongCode::deleteArr(bool*** ptr)
 	if(!ptr) return;
 	for(int i = 0; i < n; ++i)
 	{
-//		for(int j = 0; j < n; ++j)
-//			delete[] ptr[i][j];
-//		delete[] ptr[i];
 		deleteArr(ptr[i]);
 	}
-	delete[] ptr;
-	ptr = nullptr;
+	deleteArr(ptr);
 
 }
 
-uint64_t LongCode::computeState(uint64_t shift)
+uint64_t LongCode::rfsr42(uint64_t shift)
 {
+	for(int i = 0; i < n; ++i)
+		mOut[i][i] = true;
 
-	//--------------------------------------------------------------------------
-	bool** mTemp = new bool*[n];
-	for(int i = 0; i < n; ++i)
-	{
-		mTemp[i] = new bool[n];
-		for(int j = 0; j < n; ++j)
-			mTemp[i][j] = false;
-	}
-
-	//--------------------------------------------------------------------------
-	bool** m = new bool*[n];
-	for(int i = 0; i < n; ++i)
-	{
-		m[i] = new bool[n];
-		for(int j = 0; j < n; ++j)
-			m[i][j] = false;
-	}
-	for(int i = 0; i < n; ++i)
-		m[i][i] = true;
-	//--------------------------------------------------------------------------
 	bool** mCalc;
 
+	shift &= mask;
 
 	int cnt = 0;
 	while (shift > 0)
@@ -183,49 +173,33 @@ uint64_t LongCode::computeState(uint64_t shift)
 		for(int i = 0; i < n; ++i)
 			for(int j = 0; j < n; ++j)
 			{
-				mTemp[i][j] = m[i][j];
-				m[i][j] = false;
+				mIn[i][j] = mOut[i][j];
+				mOut[i][j] = false;
 			}
 
 		mCalc = b[cnt];
-//		print(mTemp);
-//		print(mCalc);
-
-		mult(mTemp,mCalc,m);
-
-//		print(m);
+		mult(mIn,mCalc,mOut);
 
 		shift >>= 1;
 		++cnt;
 	}
-
-//	print(m);
 
 	bool* initStatePtr = new bool[n];
 	for(int i = 0; i < n; ++i)
 		initStatePtr[i] = false;
 	initStatePtr[0] = true;
 
-
-
 	bool* shiftedStatePtr = new bool[n];
 	for(int i = 0; i < n; ++i)
 		shiftedStatePtr[i] = false;
 
-	mult(initStatePtr, m, shiftedStatePtr);
-
-//	print(initStatePtr);
-//	print(shiftedStatePtr);
+	mult(initStatePtr, mOut, shiftedStatePtr);
 
 	uint64_t state = 0;
 	for(int i = 0; i < n; ++i)
 	{
 		state += uint64_t(shiftedStatePtr[i]) << i;
 	}
-
-	deleteArr(mTemp);
-	deleteArr(m);
-//	delete mCalc;
-
+	state &= mask;
 	return state;
 }

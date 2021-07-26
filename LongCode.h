@@ -10,11 +10,14 @@ public:
 	LongCode();
 	~LongCode();
 
-	uint64_t computeState(uint64_t shift);
+	uint64_t rfsr42(uint64_t shift);
 private:
-	static const int n = 3;
+	static const int n = 42;
 	static const uint64_t len = pow(2, n) -1;
+	static const uint64_t mask = (uint64_t(1)<<n) - 1;
 	bool*** b;
+	bool** mIn;
+	bool** mOut;
 
 private:
 	void fillFirstMatrix();
