@@ -153,6 +153,7 @@ void LongCode::deleteArr(bool*** ptr)
 
 uint64_t LongCode::rfsr42(uint64_t shift)
 {
+	shift += 41;
 	for(int i = 0; i < n; ++i)
 		mOut[i][i] = true;
 
